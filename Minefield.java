@@ -3,10 +3,8 @@ package Saper;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
-
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -18,20 +16,21 @@ class Minefield extends GridPane {
 	private static final int BOARDSIZE = 15;
 	private static final int BOMBS = 20;
 	Field[][] fields = null;
-	private boolean isBomb = false;
-	private int bombsAround = 0;
 	private int leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
+	boolean started = false;
 	
 	Minefield() {
 		reset();
 	}
 	
-	private void reset() {
-		this.setGridLinesVisible(true);
+	protected void reset() {
+		leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
+		started = false;
+		//this.setGridLinesVisible(true);
 		this.setAlignment(Pos.CENTER);
     	//grid.setHgap(10);
     	//grid.setVgap(10);
-    	//grid.setPadding(new Insets(0, 0, 0, 0));
+    	//this.setPadding(new Insets(10, 10, 10, 10));
 		this.setPrefWidth(30);
 		this.setPrefHeight(30);
 		Random rand = new Random();
@@ -99,11 +98,11 @@ class Minefield extends GridPane {
 		}
 	}
 	
-	protected void uncover(int i, int j) {
-		if(fields[i][j].isUncovered() == false && --leftToWin == 0) win();
+	protected void uncover(int i, int j) {		
 		fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
 		fields[i][j].setId("uncovered");
 		fields[i][j].setUncovered(true);
+		if(fields[i][j].isUncovered() == false && --leftToWin == 0) win();
 		if(fields[i][j].getBombsAround() == 0) {
 			fields[i][j].setText(null);	
 			for(int r = i - 1; r < i + 2; r++)
@@ -158,21 +157,5 @@ class Minefield extends GridPane {
 		} else {
 			Platform.exit();
 		}
-	}
-
-	protected int getBombsAround() {
-		return bombsAround;
-	}
-
-	protected void setBombsAround(int bombsAround) {
-		this.bombsAround = bombsAround;
-	}
-
-	protected boolean isBomb() {
-		return isBomb;
-	}
-
-	protected void setBomb(boolean isBomb) {
-		this.isBomb = isBomb;
 	}
 }
