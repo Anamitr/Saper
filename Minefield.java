@@ -20,8 +20,10 @@ class Minefield extends GridPane {
 	Field[][] fields = null;
 	private int leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
 	boolean started = false;
-	
+	Stopwatch stopwatch = null;	
+
 	Minefield() {
+		stopwatch = new Stopwatch();
 		reset();
 	}
 	
@@ -57,10 +59,15 @@ class Minefield extends GridPane {
     			fields[i][j].setId("covered");
     			final int ii = i, jj = j;
     			fields[i][j].addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-                    if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {                        
+                    if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) { 
                         doubleClick(ii,jj);
                     } else if( e.isPrimaryButtonDown()) {
-                    	check(ii,jj);
+                    	if(started == false) {
+                    		started = true;
+                    		stopwatch.start();
+                    	}
+                    	if(fields[ii][jj].getState() != FieldState.FLAGGED)
+                    		check(ii,jj);
                     } else if( e.isSecondaryButtonDown()) {
                     	if(fields[ii][jj].getState() == FieldState.COVERED) {
                     		
@@ -117,25 +124,28 @@ class Minefield extends GridPane {
 		}		
 	}
 	protected void doubleClick(int i, int j) {
-		int flags = 0;
-		for(int r = i - 1; r < i + 2; r++)
-			for(int k = j - 1; k < j + 2; k++)
-				if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j) &&
-					fields[r][k].getState() == FieldState.FLAGGED) flags++;
-
-		//System.out.println(fields[i][j].getBombsAround() + "," + flags);
-		if(flags == fields[i][j].getBombsAround())
-		{
+		if(fields[i][j].getState() == FieldState.DISPLAYED) {
+			int flags = 0;
 			for(int r = i - 1; r < i + 2; r++)
 				for(int k = j - 1; k < j + 2; k++)
-					if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
-						&& fields[r][k].getState() == FieldState.COVERED && fields[r][k].isBomb() == false) {
-						uncover(r,k);
-					}
-		}
+					if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j) &&
+						fields[r][k].getState() == FieldState.FLAGGED) flags++;
+
+			//System.out.println(fields[i][j].getBombsAround() + "," + flags);
+			if(flags == fields[i][j].getBombsAround())
+			{
+				for(int r = i - 1; r < i + 2; r++)
+					for(int k = j - 1; k < j + 2; k++)
+						if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
+							&& fields[r][k].getState() == FieldState.COVERED && fields[r][k].isBomb() == false) {
+							uncover(r,k);
+						}
+			}
+		}	
 	}
 	
 	protected void gameover() {
+		stopwatch.stop();
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Game Over");
 		alert.setHeaderText(null);
@@ -149,18 +159,23 @@ class Minefield extends GridPane {
 	}
 	
 	protected void win() {
+		stopwatch.stop();
 		for(int i = 0; i < BOARDSIZE; i++)
     		for(int j = 0; j < BOARDSIZE; j++)
     			if(fields[i][j].isBomb()) fields[i][j].setState(FieldState.FLAGGED);
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Victory!");
 		alert.setHeaderText(null);
-		alert.setContentText("You've saved the city!\n Do you wanna save another?");
+		alert.setContentText("You've saved the city!\nYou did it in just " + stopwatch.getElapsedSeconds() + "s\nDo you wanna save another?");
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK){
 			reset();
 		} else {
 			Platform.exit();
 		}
+	}
+	
+	protected Stopwatch getStopwatch() {
+		return stopwatch;
 	}
 }

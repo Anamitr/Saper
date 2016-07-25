@@ -14,12 +14,13 @@ public class Interface extends Application {
 	@Override
     public void start(Stage primaryStage) {    	
 		primaryStage.setTitle("Saper");
-		BorderPane pane = new BorderPane();
+		BorderPane pane = new BorderPane();		
     	Minefield minefield = new Minefield();
+    	Stopwatch stopwatch = minefield.getStopwatch();
     	Menu menu = new Menu(minefield);
     	pane.setCenter(minefield);
     	pane.setTop(menu);
-    	Stopwatch stopwatch = new Stopwatch();
+    	
     	pane.setBottom(stopwatch);
     	
     	Scene scene = new Scene(pane, 600, 600);

@@ -14,8 +14,10 @@ import javafx.scene.layout.VBox;
 
 class Stopwatch extends VBox {
 	protected AnimationTimer timer = null;
-    Stopwatch() {
-        Label stopwatch = new Label();
+	protected long elapsedSeconds;
+
+	Stopwatch() {
+        Label stopwatch = new Label("Time: 0");
         BooleanProperty running = new SimpleBooleanProperty(false);
 
         timer = new AnimationTimer() {
@@ -24,10 +26,8 @@ class Stopwatch extends VBox {
 
             @Override
             public void handle(long now) {
-                long elapsedSeconds = Duration.between(startTime, LocalTime.now()).getSeconds();
-                long minutes = elapsedSeconds / 60 ;
-                long seconds = elapsedSeconds % 60 ;
-                stopwatch.setText("Time: "+minutes +" minutes "+seconds + " seconds");
+            	elapsedSeconds = Duration.between(startTime, LocalTime.now()).getSeconds();
+                stopwatch.setText("Time: " + elapsedSeconds);
             }
             @Override
             public void start() {
@@ -42,20 +42,32 @@ class Stopwatch extends VBox {
             }
         };
 
-        Button startStop = new Button();
-        startStop.textProperty().bind(Bindings.when(running).then("Stop").otherwise("Start"));
-        startStop.setOnAction(e -> {
-            if (running.get()) {
-                timer.stop();
-            } else {
-                timer.start();
-            }
-        });
+//        Button startStop = new Button();
+//        startStop.textProperty().bind(Bindings.when(running).then("Stop").otherwise("Start"));
+//        startStop.setOnAction(e -> {
+//            if (running.get()) {
+//                timer.stop();
+//            } else {
+//                timer.start();
+//            }
+//        });
         
         this.getChildren().add(stopwatch);
-        this.getChildren().add(startStop);
+//        this.getChildren().add(startStop);
         this.setPadding(new Insets(24));
         this.setMinWidth(240);
         this.setAlignment(Pos.CENTER);
     }
+    
+    protected void start() {
+    	timer.start();
+    }
+    
+    protected void stop() {
+    	timer.stop();
+    }
+    
+    protected long getElapsedSeconds() {
+		return elapsedSeconds;
+	}
 }
