@@ -5,27 +5,24 @@ import javafx.scene.control.Button;
 class Field extends Button {
 	private boolean isBomb = false;
 	private int bombsAround = 0;
-	private boolean uncovered = false;
-	private boolean isFlagged = false;
 	
-	protected boolean isFlagged() {
-		return isFlagged;
+	Field() {
+		setState(FieldState.COVERED);
 	}
 
-	protected void setFlagged(boolean isFlagged) {
-		this.isFlagged = isFlagged;
-		if(isFlagged) setId("flag");
-		else setId("uncovered");
-	}
+	public enum FieldState { COVERED, DISPLAYED, FLAGGED };
+	FieldState state;
 
-	protected boolean isUncovered() {
-		return uncovered;
+	protected void setState(FieldState newState) {
+		state = newState;
+		switch (state) {
+		case COVERED:	this.setId("covered"); break;
+		case DISPLAYED:	this.setId("displayed"); break;
+		case FLAGGED:	this.setId("flag"); break;
+		}
 	}
-
-	protected void setUncovered(boolean uncovered) {
-		this.uncovered = uncovered;
-		if(!uncovered) setId("covered");
-	}
+	
+	protected FieldState getState() { return state; }
 
 	protected int getBombsAround() {
 		return bombsAround;

@@ -3,6 +3,8 @@ package Saper;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
+
+import Saper.Field.FieldState;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -51,7 +53,6 @@ class Minefield extends GridPane {
     			boolean contains = IntStream.of(bombs).anyMatch(x -> x == numberOfField);
     			if(contains) {
     				fields[i][j].setBomb(true);
-    				//fields[i][j].setId("bomb");
     			}    			
     			fields[i][j].setId("covered");
     			final int ii = i, jj = j;
@@ -61,12 +62,12 @@ class Minefield extends GridPane {
                     } else if( e.isPrimaryButtonDown()) {
                     	check(ii,jj);
                     } else if( e.isSecondaryButtonDown()) {
-                    	if(!fields[ii][jj].isUncovered() && !fields[ii][jj].isFlagged()) {
+                    	if(fields[ii][jj].getState() == FieldState.COVERED) {
                     		
-                        	fields[ii][jj].setFlagged(true);
+                        	fields[ii][jj].setState(FieldState.FLAGGED);;
                     	}
-                    	else if(fields[ii][jj].isFlagged()) {
-                    		fields[ii][jj].setFlagged(false);
+                    	else if(fields[ii][jj].getState() == FieldState.FLAGGED) {
+                    		fields[ii][jj].setState(FieldState.COVERED);
                     		
                     	}
                     }
@@ -98,36 +99,37 @@ class Minefield extends GridPane {
 		}
 	}
 	
-	protected void uncover(int i, int j) {		
-		fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
-		fields[i][j].setId("uncovered");
-		fields[i][j].setUncovered(true);
-		if(fields[i][j].isUncovered() == false && --leftToWin == 0) win();
-		if(fields[i][j].getBombsAround() == 0) {
-			fields[i][j].setText(null);	
-			for(int r = i - 1; r < i + 2; r++)
-				for(int k = j - 1; k < j + 2; k++)
-					if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
-						&& fields[r][k].isUncovered() == false) {
-						uncover(r,k);
-					}
-		}
+	protected void uncover(int i, int j) {	
+		if(fields[i][j].getState() == FieldState.COVERED) {
+			fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
+			fields[i][j].setId("uncovered");
+			fields[i][j].setState(FieldState.DISPLAYED);
+			if(--leftToWin == 0) win();
+			if(fields[i][j].getBombsAround() == 0) {
+				fields[i][j].setText(null);	
+				for(int r = i - 1; r < i + 2; r++)
+					for(int k = j - 1; k < j + 2; k++)
+						if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
+							&& fields[r][k].getState() == FieldState.COVERED) {
+							uncover(r,k);
+						}
+			}
+		}		
 	}
 	protected void doubleClick(int i, int j) {
 		int flags = 0;
 		for(int r = i - 1; r < i + 2; r++)
 			for(int k = j - 1; k < j + 2; k++)
-			{
-				if(r != i && k != j && fields[r][k].isFlagged()) flags++;
-				System.out.println(fields[r][k].getId());
-			}
-		System.out.println(fields[i][j].getBombsAround() + "," + flags);
+				if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j) &&
+					fields[r][k].getState() == FieldState.FLAGGED) flags++;
+
+		//System.out.println(fields[i][j].getBombsAround() + "," + flags);
 		if(flags == fields[i][j].getBombsAround())
 		{
 			for(int r = i - 1; r < i + 2; r++)
 				for(int k = j - 1; k < j + 2; k++)
 					if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
-						&& fields[r][k].isUncovered() == false && fields[r][k].isBomb() == false) {
+						&& fields[r][k].getState() == FieldState.COVERED && fields[r][k].isBomb() == false) {
 						uncover(r,k);
 					}
 		}
@@ -147,6 +149,9 @@ class Minefield extends GridPane {
 	}
 	
 	protected void win() {
+		for(int i = 0; i < BOARDSIZE; i++)
+    		for(int j = 0; j < BOARDSIZE; j++)
+    			if(fields[i][j].isBomb()) fields[i][j].setState(FieldState.FLAGGED);
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Victory!");
 		alert.setHeaderText(null);
