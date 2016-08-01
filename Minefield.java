@@ -86,6 +86,8 @@ class Minefield extends GridPane {
     			//if(!fields[i][j].isBomb()) fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
     			//if(!fields[i][j].isBomb()) fields[i][j].setText(i + "," + j);
     		}
+		stopwatch.stop();
+		stopwatch.reset();
 		coverAll();
 	}
 	protected void check(int i, int j) {
@@ -127,8 +129,8 @@ class Minefield extends GridPane {
 				for(int r = i - 1; r < i + 2; r++)
 					for(int k = j - 1; k < j + 2; k++)
 						if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
-							&& fields[r][k].getState() == FieldState.COVERED && fields[r][k].isBomb() == false) {
-							uncover(r,k);
+							&& fields[r][k].getState() == FieldState.COVERED) {
+							check(r,k);
 						}
 			}
 		}	
@@ -171,11 +173,12 @@ class Minefield extends GridPane {
 	protected void prepareInfoPanel() {
 		InfoPanel = new HBox();		
 		stopwatch = new Stopwatch();
-		Label flagImg = new Label();
-		flagImg.setId("flag");
+		Label flagImg = new mLabel();
+		flagImg.setId("cleanFlag");
 		flagImg.setPrefHeight(30);
 		flagImg.setPrefWidth(30);
-		numOfFlagsLeft = new Label(Integer.toString(flagsLeft));
+		numOfFlagsLeft = new mLabel();
+		numOfFlagsLeft.setText(Integer.toString(flagsLeft));
 		HBox flagsBox = new HBox();
 		flagsBox.getChildren().add(flagImg);
 		flagsBox.getChildren().add(numOfFlagsLeft);
