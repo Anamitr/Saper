@@ -13,6 +13,7 @@ class Menu extends HBox {
 		this.setAlignment(Pos.CENTER);
 		this.setPadding(new Insets(30,10,10,10));
     	Button newGame = new Button("New Game");
+    	newGame.setId("covered");
     	newGame.setOnAction(new EventHandler<ActionEvent>() {        	 
             @Override
             public void handle(ActionEvent e) {
@@ -21,13 +22,14 @@ class Menu extends HBox {
         });
     	//newGame.setPadding(new Insets(10,10,10,10));
     	Button exit = new Button("Exit");
+    	exit.setId("covered");
     	exit.setOnAction(new EventHandler<ActionEvent>() {        	 
             @Override
             public void handle(ActionEvent e) {
             	System.out.println("exit");
                 Platform.exit();
             }
-        });
+        });    	
     	this.getChildren().add(newGame);
     	this.getChildren().add(exit);
 	}

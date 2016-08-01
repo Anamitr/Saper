@@ -21,6 +21,7 @@ public class Interface extends Application {
     	pane.setCenter(minefield);
     	pane.setTop(menu);    	
     	pane.setBottom(minefield.getInfoPanel());
+    	pane.setId("displayed");
     	
     	Scene scene = new Scene(pane, 600, 600);
     	primaryStage.setScene(scene);

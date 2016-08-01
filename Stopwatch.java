@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 class Stopwatch extends HBox {
 	protected AnimationTimer timer = null;
 	protected long elapsedSeconds;
+	Label stopwatch;
 
 	Stopwatch() {
 		Label clockImg = new Label();
@@ -21,7 +22,8 @@ class Stopwatch extends HBox {
 		clockImg.setPrefHeight(30);
 		clockImg.setPrefWidth(30);
 		
-        Label stopwatch = new Label("0");
+        stopwatch = new mLabel();
+        stopwatch.setText("0");
         BooleanProperty running = new SimpleBooleanProperty(false);
         timer = new AnimationTimer() {
             private LocalTime startTime;
@@ -61,4 +63,8 @@ class Stopwatch extends HBox {
     protected long getElapsedSeconds() {
 		return elapsedSeconds;
 	}
+    
+    protected void reset() {
+    	stopwatch.setText("0");
+    }
 }
