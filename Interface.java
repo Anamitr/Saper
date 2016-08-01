@@ -1,27 +1,26 @@
 package Saper;
 
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Interface extends Application {
 	@Override
     public void start(Stage primaryStage) {    	
 		primaryStage.setTitle("Saper");
-		BorderPane pane = new BorderPane();		
-    	Minefield minefield = new Minefield();
-    	Stopwatch stopwatch = minefield.getStopwatch();
+		BorderPane pane = new BorderPane();
+    	Minefield minefield = new Minefield();    	
     	Menu menu = new Menu(minefield);
-    	pane.setCenter(minefield);
-    	pane.setTop(menu);
     	
-    	pane.setBottom(stopwatch);
+    	pane.setCenter(minefield);
+    	pane.setTop(menu);    	
+    	pane.setBottom(minefield.getInfoPanel());
     	
     	Scene scene = new Scene(pane, 600, 600);
     	primaryStage.setScene(scene);

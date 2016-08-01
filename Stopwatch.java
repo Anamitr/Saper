@@ -3,31 +3,32 @@ package Saper;
 import java.time.Duration;
 import java.time.LocalTime;
 import javafx.animation.AnimationTimer;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-class Stopwatch extends VBox {
+class Stopwatch extends HBox {
 	protected AnimationTimer timer = null;
 	protected long elapsedSeconds;
 
 	Stopwatch() {
-        Label stopwatch = new Label("Time: 0");
+		Label clockImg = new Label();
+		clockImg.setId("clock");
+		clockImg.setPrefHeight(30);
+		clockImg.setPrefWidth(30);
+		
+        Label stopwatch = new Label("0");
         BooleanProperty running = new SimpleBooleanProperty(false);
-
         timer = new AnimationTimer() {
-
-            private LocalTime startTime ;
-
+            private LocalTime startTime;
             @Override
             public void handle(long now) {
             	elapsedSeconds = Duration.between(startTime, LocalTime.now()).getSeconds();
-                stopwatch.setText("Time: " + elapsedSeconds);
+                stopwatch.setText(Long.toString(elapsedSeconds));
             }
             @Override
             public void start() {
@@ -41,21 +42,11 @@ class Stopwatch extends VBox {
                 super.stop();
             }
         };
-
-//        Button startStop = new Button();
-//        startStop.textProperty().bind(Bindings.when(running).then("Stop").otherwise("Start"));
-//        startStop.setOnAction(e -> {
-//            if (running.get()) {
-//                timer.stop();
-//            } else {
-//                timer.start();
-//            }
-//        });
         
+        this.getChildren().add(clockImg);
         this.getChildren().add(stopwatch);
-//        this.getChildren().add(startStop);
-        this.setPadding(new Insets(24));
-        this.setMinWidth(240);
+        //this.setPadding(new Insets(24));
+        //this.setMinWidth(240);
         this.setAlignment(Pos.CENTER);
     }
     

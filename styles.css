@@ -20,6 +20,9 @@
 #flag {
 	-fx-background-image: url("flag.png");
 }
+#clock {
+	-fx-background-image: url("clock1.png");
+}
 #test {
 	-fx-background-color: pink;
 }
