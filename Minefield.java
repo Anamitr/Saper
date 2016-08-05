@@ -16,8 +16,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 class Minefield extends GridPane {
-	private static final int BOARDSIZE = 15;
-	private static final int BOMBS = 20;
+	private static int BOARDSIZE = 15;
+	private static int BOMBS = 20;
 	Field[][] fields = null;
 	private int leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
 	boolean started = false;
@@ -25,6 +25,8 @@ class Minefield extends GridPane {
 	private HBox InfoPanel;
 	private Label numOfFlagsLeft;
 	private int flagsLeft = BOMBS;
+	public enum Difficulty {EASY, MEDIUM, HARD};
+	protected Difficulty difficulty = Difficulty.MEDIUM;
 	
 	Minefield() {
 		this.setAlignment(Pos.CENTER);
@@ -32,7 +34,10 @@ class Minefield extends GridPane {
 		this.setPrefHeight(30);
 		prepareInfoPanel();
 		reset();
-	}	
+	}
+	protected void changeDifficulty() {
+		
+	}
 	protected void reset() {
 		leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
 		started = false;		
@@ -51,7 +56,7 @@ class Minefield extends GridPane {
     			fields[i][j].setId("covered");
     			final int ii = i, jj = j;
     			fields[i][j].addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-                    if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) { 
+                    if( e.isPrimaryButtonDown() && e.isSecondaryButtonDown()) {
                         doubleClick(ii,jj);
                     } else if( e.isPrimaryButtonDown()) {
                     	if(started == false) {
@@ -88,7 +93,7 @@ class Minefield extends GridPane {
     		}
 		stopwatch.stop();
 		stopwatch.reset();
-		coverAll();
+		//coverAll();
 	}
 	protected void check(int i, int j) {
 		if(fields[i][j].isBomb()) {
@@ -102,8 +107,8 @@ class Minefield extends GridPane {
 	protected void uncover(int i, int j) {
 		if(fields[i][j].getState() == FieldState.COVERED) {
 			fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
-			fields[i][j].setState(FieldState.DISPLAYED);			
-			if(--leftToWin == 0) win();
+			fields[i][j].setState(FieldState.DISPLAYED);	
+			
 			if(fields[i][j].getBombsAround() == 0) {
 				fields[i][j].setText(null);	
 				for(int r = i - 1; r < i + 2; r++)
@@ -111,25 +116,27 @@ class Minefield extends GridPane {
 						if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
 							&& fields[r][k].getState() == FieldState.COVERED) {
 							uncover(r,k);
+                    		System.out.println("Uncover " + r + "," + k);
 						}
 			}
+			if(--leftToWin == 0) win();
 		}
 	}
 	protected void doubleClick(int i, int j) {
 		if(fields[i][j].getState() == FieldState.DISPLAYED) {
+			// calculating flags
 			int flags = 0;
 			for(int r = i - 1; r < i + 2; r++)
 				for(int k = j - 1; k < j + 2; k++)
 					if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j) &&
 						fields[r][k].getState() == FieldState.FLAGGED) flags++;
 
-			//System.out.println(fields[i][j].getBombsAround() + "," + flags);
 			if(flags == fields[i][j].getBombsAround())
 			{
 				for(int r = i - 1; r < i + 2; r++)
 					for(int k = j - 1; k < j + 2; k++)
 						if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
-							&& fields[r][k].getState() == FieldState.COVERED) {
+							&& fields[r][k].getState() == FieldState.COVERED && started) {
 							check(r,k);
 						}
 			}
@@ -163,6 +170,7 @@ class Minefield extends GridPane {
 		} else {
 			Platform.exit();
 		}
+		System.out.println("win");
 	}	
 	protected Stopwatch getStopwatch() {
 		return stopwatch;
@@ -173,12 +181,11 @@ class Minefield extends GridPane {
 	protected void prepareInfoPanel() {
 		InfoPanel = new HBox();		
 		stopwatch = new Stopwatch();
-		Label flagImg = new mLabel();
+		Label flagImg = new Label();
 		flagImg.setId("cleanFlag");
 		flagImg.setPrefHeight(30);
 		flagImg.setPrefWidth(30);
-		numOfFlagsLeft = new mLabel();
-		numOfFlagsLeft.setText(Integer.toString(flagsLeft));
+		numOfFlagsLeft = new mLabel(Integer.toString(flagsLeft));
 		HBox flagsBox = new HBox();
 		flagsBox.getChildren().add(flagImg);
 		flagsBox.getChildren().add(numOfFlagsLeft);

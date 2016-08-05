@@ -22,8 +22,7 @@ class Stopwatch extends HBox {
 		clockImg.setPrefHeight(30);
 		clockImg.setPrefWidth(30);
 		
-        stopwatch = new mLabel();
-        stopwatch.setText("0");
+        stopwatch = new mLabel("0");
         BooleanProperty running = new SimpleBooleanProperty(false);
         timer = new AnimationTimer() {
             private LocalTime startTime;

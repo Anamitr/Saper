@@ -12,14 +12,14 @@ import javafx.stage.Stage;
 
 public class Interface extends Application {
 	@Override
-    public void start(Stage primaryStage) {    	
+    public void start(Stage primaryStage) {
 		primaryStage.setTitle("Saper");
 		BorderPane pane = new BorderPane();
-    	Minefield minefield = new Minefield();    	
+    	Minefield minefield = new Minefield();
     	Menu menu = new Menu(minefield);
     	
     	pane.setCenter(minefield);
-    	pane.setTop(menu);    	
+    	pane.setTop(menu);
     	pane.setBottom(minefield.getInfoPanel());
     	pane.setId("displayed");
     	
