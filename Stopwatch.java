@@ -9,7 +9,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
 class Stopwatch extends HBox {
 	protected AnimationTimer timer = null;
@@ -21,6 +20,7 @@ class Stopwatch extends HBox {
 		clockImg.setId("clock");
 		clockImg.setPrefHeight(30);
 		clockImg.setPrefWidth(30);
+		this.setPadding(new Insets(0,0,10,0));
 		
         stopwatch = new mLabel("0");
         BooleanProperty running = new SimpleBooleanProperty(false);

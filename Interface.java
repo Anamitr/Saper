@@ -15,7 +15,7 @@ public class Interface extends Application {
     public void start(Stage primaryStage) {
 		primaryStage.setTitle("Saper");
 		BorderPane pane = new BorderPane();
-    	Minefield minefield = new Minefield();
+    	Minefield minefield = new Minefield(primaryStage);
     	Menu menu = new Menu(minefield);
     	
     	pane.setCenter(minefield);
@@ -23,7 +23,7 @@ public class Interface extends Application {
     	pane.setBottom(minefield.getInfoPanel());
     	pane.setId("displayed");
     	
-    	Scene scene = new Scene(pane, 600, 600);
+    	Scene scene = new Scene(pane);
     	primaryStage.setScene(scene);
     	scene.getStylesheets().add(Interface.class.getResource("styles.css").toExternalForm());
     	primaryStage.show();
