@@ -26,15 +26,13 @@ class Minefield extends GridPane {
 	private Stopwatch stopwatch = null;
 	private HBox InfoPanel;
 	private Label numOfFlagsLeft;
-	public enum Difficulty {EASY, MEDIUM, HARD};
-	protected Difficulty difficulty = Difficulty.MEDIUM;
+	public enum Difficulty {VILLAGE, TOWN, CITY};
+	protected Difficulty difficulty = Difficulty.TOWN;
 	Stage primaryStage;
 	
 	Minefield(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.setAlignment(Pos.CENTER);
-//		this.setPrefWidth(30);
-//		this.setPrefHeight(30);
 		this.setPadding(new Insets(30,30,30,30));
 		prepareInfoPanel();
 		reset();
@@ -42,21 +40,22 @@ class Minefield extends GridPane {
 	protected void changeDifficulty(Difficulty newDifficulty) {
 		this.clearBoard();
 		switch(newDifficulty) {
-		case EASY:
-			System.out.println("Changing to easy");
+		case VILLAGE:
+			difficulty = Difficulty.VILLAGE;
 			BOARDSIZE = 9;
 			BOMBS = 10;
 			leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
 			flagsLeft = BOMBS;
 			break;
-		case MEDIUM:
-			System.out.println("Changing to medium");
+		case TOWN:
+			difficulty = Difficulty.TOWN;
 			BOARDSIZE = 16;
 			BOMBS = 40;
 			leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
 			flagsLeft = BOMBS;
 			break;
-		case HARD:
+		case CITY:
+			difficulty = Difficulty.CITY;
 			BOARDSIZE = 28;
 			BOMBS = 100;
 			leftToWin = BOARDSIZE * BOARDSIZE - BOMBS;
@@ -77,8 +76,6 @@ class Minefield extends GridPane {
 		for(int i = 0; i < BOARDSIZE; i++)
     		for(int j = 0; j < BOARDSIZE; j++) {
     			fields[i][j] = new Field();
-//        		fields[i][j].setPrefHeight(this.getPrefHeight());    		
-//        		fields[i][j].setPrefWidth(this.getPrefWidth());
     			fields[i][j].setMinHeight(30);
         		fields[i][j].setMinWidth(30);
     			final int numberOfField = i*BOARDSIZE + j;
@@ -99,8 +96,6 @@ class Minefield extends GridPane {
                     	if(fields[ii][jj].getState() == FieldState.COVERED) {                    		
                         	fields[ii][jj].setState(FieldState.FLAGGED);
                         	numOfFlagsLeft.setText(Integer.toString(--flagsLeft)); 
-                        	//coverAll();
-                        	//this.coverAll();
                     	}
                     	else if(fields[ii][jj].getState() == FieldState.FLAGGED) {
                     		fields[ii][jj].setState(FieldState.COVERED);
@@ -112,18 +107,14 @@ class Minefield extends GridPane {
     		}
 		
 		for(int i = 0; i < BOARDSIZE; i++)
-    		for(int j = 0; j < BOARDSIZE; j++) {
+    		for(int j = 0; j < BOARDSIZE; j++)
     			if(!fields[i][j].isBomb()) 
         			for(int r = i - 1; r < i + 2; r++)
         				for(int k = j - 1; k < j + 2; k++)
         					if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE &&
-        						fields[r][k].isBomb()) fields[i][j].setBombsAround(fields[i][j].getBombsAround()+1);				
-    			//if(!fields[i][j].isBomb()) fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
-    			//if(!fields[i][j].isBomb()) fields[i][j].setText(i + "," + j);
-    		}
+        						fields[r][k].isBomb()) fields[i][j].setBombsAround(fields[i][j].getBombsAround()+1);
 		stopwatch.stop();
 		stopwatch.reset();
-		//coverAll();
 	}
 	protected void check(int i, int j) {
 		if(fields[i][j].isBomb()) {
@@ -136,7 +127,6 @@ class Minefield extends GridPane {
 	}	
 	protected void uncover(int i, int j) {
 		if(fields[i][j].getState() == FieldState.COVERED) {
-			System.out.println("Left to win: " + leftToWin);
 			fields[i][j].setText(Integer.toString(fields[i][j].getBombsAround()));
 			fields[i][j].setState(FieldState.DISPLAYED);	
 			
@@ -147,7 +137,6 @@ class Minefield extends GridPane {
 						if(r >= 0 && r < BOARDSIZE && k >= 0 && k < BOARDSIZE && !(r == i && k == j)
 							&& fields[r][k].getState() == FieldState.COVERED) {
 							uncover(r,k);
-                    		//System.out.println("Uncover " + r + "," + k);
 						}
 			}
 			if(--leftToWin == 0) win();
@@ -184,7 +173,6 @@ class Minefield extends GridPane {
 		}
 	}	
 	protected void win() {
-		System.out.println("Win, leftToWin: " + leftToWin);
 		stopwatch.stop();
 		for(int i = 0; i < BOARDSIZE; i++)
     		for(int j = 0; j < BOARDSIZE; j++)
@@ -192,20 +180,16 @@ class Minefield extends GridPane {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Victory!");
 		alert.setHeaderText(null);
-		alert.setContentText("You've saved the city!\nYou did it in just " + stopwatch.getElapsedSeconds() + "s\nDo you wanna save another?");
+		alert.setContentText("You've saved the " + difficulty.name().toLowerCase() + "!\nYou did it in just " + stopwatch.getElapsedSeconds() + "s\nDo you wanna save another?");
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK){
 			this.reset();
 		} else {
 			Platform.exit();
 		}
-		System.out.println("win");
 	}	
 	protected Stopwatch getStopwatch() {
 		return stopwatch;
-	}
-	protected HBox getInfoPanel() {
-		return InfoPanel;
 	}
 	protected void prepareInfoPanel() {
 		InfoPanel = new HBox();		
@@ -222,13 +206,15 @@ class Minefield extends GridPane {
 		InfoPanel.getChildren().add(flagsBox);
 		InfoPanel.setAlignment(Pos.CENTER);
 	}
+	protected HBox getInfoPanel() {
+		return InfoPanel;
+	}
 	private static ArrayList<Integer> generateRandomArray(int n) {
 		ArrayList<Integer> randomList = new ArrayList<Integer>();
     	for(int i = 0; i < BOARDSIZE * BOARDSIZE; i++)
     		randomList.add(new Integer(i));
     	Collections.shuffle(randomList);
     	ArrayList<Integer> bombs = new ArrayList<Integer>(randomList.subList(0, n));
-    	System.out.println(bombs);
     	return bombs;
 	}
 	private void clearBoard() {

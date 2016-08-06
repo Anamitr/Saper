@@ -26,7 +26,6 @@ class Menu extends HBox {
                 minefield.reset();
             }
         });
-    	//newGame.setPadding(new Insets(10,10,10,10));
     	Button exit = new Button("Exit");
     	exit.setId("covered");
     	exit.setOnAction(new EventHandler<ActionEvent>() {        	 
@@ -49,20 +48,20 @@ class Menu extends HBox {
             public void changed(ObservableValue ov, String t, String t1) {
             	switch (t1) {
             	case "Village":
-            		minefield.changeDifficulty(Difficulty.EASY);
+            		minefield.changeDifficulty(Difficulty.VILLAGE);
             		break;
             	case "Town":
-            		minefield.changeDifficulty(Difficulty.MEDIUM);
+            		minefield.changeDifficulty(Difficulty.TOWN);
             		break;
             	case "City":
-            		minefield.changeDifficulty(Difficulty.HARD);
+            		minefield.changeDifficulty(Difficulty.CITY);
             		break;
             	}
             }    
         });
     	
-    	this.getChildren().add(newGame);
-    	this.getChildren().add(exit);
+    	this.getChildren().add(newGame);    	
     	this.getChildren().add(comboBox);
+    	this.getChildren().add(exit);
 	}
 }
